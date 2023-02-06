@@ -5,7 +5,6 @@ import java.time.format.DateTimeFormatter;
 
 import static java.time.format.DateTimeFormatter.ISO_OFFSET_DATE_TIME;
 
-
 public class HabrCareerDateTimeParser implements DateTimeParser {
     private static final DateTimeFormatter FORMATTER = ISO_OFFSET_DATE_TIME;
 
