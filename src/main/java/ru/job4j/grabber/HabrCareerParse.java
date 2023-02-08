@@ -20,8 +20,8 @@ public class HabrCareerParse {
         Document document = connection.get();
         Elements rows = document.select(".vacancy-description__text");
         rows.forEach(row -> {
-            Element description  = row.select(".style-ugc").first();
-            builder.append(description.text());
+                    Element description  = row.select(".style-ugc").first();
+                    builder.append(description.text());
                 }
         );
         return builder.toString();
