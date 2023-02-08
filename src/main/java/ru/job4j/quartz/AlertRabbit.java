@@ -24,7 +24,7 @@ public class AlertRabbit {
         return config;
     }
 
-    public static Connection connect(Properties config) throws ClassNotFoundException, SQLException {
+    public static Connection getConnect(Properties config) throws ClassNotFoundException, SQLException {
         Class.forName(config.getProperty("driver-class-name"));
         Connection cn = DriverManager.getConnection(
                 config.getProperty("url"),
@@ -40,22 +40,26 @@ public class AlertRabbit {
             Scheduler scheduler = StdSchedulerFactory.getDefaultScheduler();
             scheduler.start();
             JobDataMap data = new JobDataMap();
-            data.put("connect", connect(config));
-            JobDetail job = newJob(Rabbit.class)
-                    .usingJobData(data)
-                    .build();
-            SimpleScheduleBuilder times = simpleSchedule()
-                    .withIntervalInSeconds(Integer.parseInt(config.getProperty("rabbit.interval")))
-                    .repeatForever();
-            Trigger trigger = newTrigger()
-                    .startNow()
-                    .withSchedule(times)
-                    .build();
-            scheduler.scheduleJob(job, trigger);
-            Thread.sleep(10000);
-            scheduler.shutdown();
-        } catch (Exception se) {
-            se.printStackTrace();
+            try (Connection connection = getConnect(config)) {
+                data.put("connect", connection);
+                JobDetail job = newJob(Rabbit.class)
+                        .usingJobData(data)
+                        .build();
+                SimpleScheduleBuilder times = simpleSchedule()
+                        .withIntervalInSeconds(Integer.parseInt(config.getProperty("rabbit.interval")))
+                        .repeatForever();
+                Trigger trigger = newTrigger()
+                        .startNow()
+                        .withSchedule(times)
+                        .build();
+                scheduler.scheduleJob(job, trigger);
+                Thread.sleep(10000);
+                scheduler.shutdown();
+            } catch (Exception se) {
+                se.printStackTrace();
+            }
+        } catch (SchedulerException e) {
+            throw new RuntimeException(e);
         }
     }
 
