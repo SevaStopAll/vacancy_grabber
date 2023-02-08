@@ -27,9 +27,7 @@ public class HabrCareerParse implements Parse {
         StringBuilder builder = new StringBuilder();
         Connection connection = Jsoup.connect(link);
         Document document = connection.get();
-        Elements rows = document.select(".vacancy-description__text");
-        rows.forEach(row -> builder.append(row.select(".style-ugc").text())
-        );
+        builder.append(document.select(".vacancy-description__text").text());
         return builder.toString();
     }
 
