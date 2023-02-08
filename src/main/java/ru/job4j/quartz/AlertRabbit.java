@@ -1,4 +1,5 @@
 package ru.job4j.quartz;
+
 import org.quartz.*;
 import org.quartz.impl.StdSchedulerFactory;
 
@@ -13,7 +14,7 @@ import static org.quartz.SimpleScheduleBuilder.*;
 
 public class AlertRabbit {
 
-    public static Properties setUp() throws IOException {
+    public static Properties setUp() {
         Properties config = new Properties();
         try (InputStream in = AlertRabbit.class.getClassLoader().getResourceAsStream("rabbit.properties")) {
             config.load(in);
@@ -23,19 +24,23 @@ public class AlertRabbit {
         return config;
     }
 
+    public static Connection connect(Properties config) throws ClassNotFoundException, SQLException {
+        Class.forName(config.getProperty("driver-class-name"));
+        Connection cn = DriverManager.getConnection(
+                config.getProperty("url"),
+                config.getProperty("username"),
+                config.getProperty("password")
+        );
+        return cn;
+    }
+
     public static void main(String[] args) {
+        Properties config = setUp();
         try {
-            Properties config = setUp();
-            Class.forName(config.getProperty("driver-class-name"));
-            Connection cn = DriverManager.getConnection(
-                    config.getProperty("url"),
-                    config.getProperty("username"),
-                    config.getProperty("password")
-            );
             Scheduler scheduler = StdSchedulerFactory.getDefaultScheduler();
             scheduler.start();
             JobDataMap data = new JobDataMap();
-            data.put("connect", cn);
+            data.put("connect", connect(config));
             JobDetail job = newJob(Rabbit.class)
                     .usingJobData(data)
                     .build();
@@ -62,8 +67,8 @@ public class AlertRabbit {
 
         @Override
         public void execute(JobExecutionContext context) {
-            try (Connection connect = (Connection) context.getJobDetail().getJobDataMap().get("connect");
-                 PreparedStatement ps =
+            Connection connect = (Connection) context.getJobDetail().getJobDataMap().get("connect");
+            try (PreparedStatement ps =
                          connect.prepareStatement("insert into rabbit(created_date) values (?)")) {
                 long millis = System.currentTimeMillis();
                 Timestamp timestamp = new Timestamp(millis);
@@ -75,3 +80,5 @@ public class AlertRabbit {
         }
     }
 }
+
+
