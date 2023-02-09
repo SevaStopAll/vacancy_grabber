@@ -59,7 +59,8 @@ public class HabrCareerParse implements Parse {
                 throw new RuntimeException(e);
             }
             Elements rows = document.select(".vacancy-card__inner");
-            rows.forEach(row -> posts.add(getPost(row)));
+            rows.forEach(row ->
+                    posts.add(getPost(row)));
         }
         return posts;
     }
