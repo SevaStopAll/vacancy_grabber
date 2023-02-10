@@ -40,6 +40,11 @@ public class PsqlStore implements Store {
             ps.setString(3, post.getLink());
             ps.setTimestamp(4, Timestamp.valueOf(post.getCreated()));
             ps.execute();
+            try (ResultSet generatedKeys = ps.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    post.setId(generatedKeys.getInt(1));
+                }
+            }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
