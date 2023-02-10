@@ -25,7 +25,7 @@ public class Grabber implements Grab {
     }
 
     @Override
-    public void start(Parse parse, Store store, Scheduler scheduler) throws SchedulerException {
+    public void start() throws SchedulerException {
         JobDataMap data = new JobDataMap();
         data.put("store", store);
         data.put("parse", parse);
@@ -48,7 +48,7 @@ public class Grabber implements Grab {
             JobDataMap map = context.getJobDetail().getJobDataMap();
             Store store = (Store) map.get("store");
             Parse parse = (Parse) map.get("parse");
-            /* TODO impl logic */
+            parse.list().forEach(store::save);
         }
     }
 
@@ -63,6 +63,6 @@ public class Grabber implements Grab {
         var parse = new HabrCareerParse(new HabrCareerDateTimeParser());
         var store = new PsqlStore(cfg);
         var time = Integer.parseInt(cfg.getProperty("time"));
-        new Grabber(parse, store, scheduler, time).start(parse, store, scheduler);
+        new Grabber(parse, store, scheduler, time).start();
     }
 }
