@@ -86,15 +86,13 @@ public class PsqlStore implements Store {
 
     public static void main(String[] args) throws Exception {
         Properties config = new Properties();
-        try (InputStream in = PsqlStore.class.getClassLoader().getResourceAsStream("psqlStore.properties")) {
+        try (InputStream in = PsqlStore.class.getClassLoader().getResourceAsStream("app.properties")) {
             config.load(in);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
         try (PsqlStore psql = new PsqlStore(config)) {
-            psql.save(new Post("Java developer", "We are waiting for Junior Java Developer", "hh.ru", LocalDateTime.now()));
-            System.out.println(psql.getAll().get(0));
-            System.out.println(psql.findById(1));
+            psql.save(new Post("Java developer2", "hh.ru", "We are waiting for Junior Java Developer.ru", LocalDateTime.now()));
         }
     }
 }
