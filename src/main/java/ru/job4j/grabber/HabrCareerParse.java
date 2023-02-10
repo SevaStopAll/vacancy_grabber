@@ -48,7 +48,7 @@ public class HabrCareerParse implements Parse {
     }
 
     @Override
-    public List<Post> list(String link) {
+    public List<Post> list() {
         List<Post> posts = new ArrayList<>();
         for (int index = 1; index <= PAGE; index++) {
             Connection connection = Jsoup.connect(PAGE_LINK + index);
@@ -67,6 +67,6 @@ public class HabrCareerParse implements Parse {
 
     public static void main(String[] args) {
         HabrCareerParse parser = new HabrCareerParse(new HabrCareerDateTimeParser());
-        System.out.println(parser.list(PAGE_LINK).get(0).getName());
+        System.out.println(parser.list().get(0).getName());
     }
 }
