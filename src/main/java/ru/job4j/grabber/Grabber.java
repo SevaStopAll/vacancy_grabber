@@ -95,7 +95,7 @@ public class Grabber implements Grab {
         var store = new PsqlStore(cfg);
         var time = Integer.parseInt(cfg.getProperty("time"));
         Grabber grab = new Grabber(parse, store, scheduler, time);
-/*        grab.start();*/
+        grab.start();
         grab.web(store);
     }
 }
