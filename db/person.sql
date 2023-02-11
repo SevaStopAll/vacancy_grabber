@@ -7,10 +7,8 @@ select company.name, count(*) as persons from company
 join person
 on company.id = person.company_id
 group by company.name
-having count(*) = (select count(*) from  company
-                  join person
-                  on company.id = person.company_id
-                  group by company.name
+having count(*) = (select count(*) from  person
+                  group by company_id
                   order by 1 desc limit 1);
 
 
