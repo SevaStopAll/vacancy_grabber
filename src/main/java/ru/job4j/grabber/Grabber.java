@@ -7,6 +7,7 @@ import ru.job4j.grabber.utils.HabrCareerDateTimeParser;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.nio.charset.Charset;
 import java.util.Properties;
 
 import static org.quartz.JobBuilder.newJob;
@@ -69,7 +70,7 @@ public class Grabber implements Grab {
                     try (OutputStream out = socket.getOutputStream()) {
                         out.write("HTTP/1.1 200 OK\r\n\r\n".getBytes());
                         for (Post post : store.getAll()) {
-                            out.write(post.toString().getBytes());  //post.toString().getBytes(Charset.forName("Windows-1251"));
+                            out.write(post.toString().getBytes(Charset.forName("Windows-1251")));
                             out.write(System.lineSeparator().getBytes());
                         }
                     } catch (IOException io) {
@@ -93,15 +94,8 @@ public class Grabber implements Grab {
         var parse = new HabrCareerParse(new HabrCareerDateTimeParser());
         var store = new PsqlStore(cfg);
         var time = Integer.parseInt(cfg.getProperty("time"));
-        new Grabber(parse, store, scheduler, time).start();
-    }
-
-   /* public static void main(String[] args) throws Exception {
-        Grabber grab = new Grabber();
-        grab.cfg();
-        Scheduler scheduler = grab.scheduler();
-        Store store = grab.store();
-        grab.init(new HabrCareerParse(new HabrCareerDateTimeParser()), store, scheduler);
+        Grabber grab = new Grabber(parse, store, scheduler, time);
+/*        grab.start();*/
         grab.web(store);
-    }*/
+    }
 }
